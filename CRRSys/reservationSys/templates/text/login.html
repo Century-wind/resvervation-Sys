@@ -1,0 +1,48 @@
+{% extends 'lrbase.html' %}
+
+{% block title %}login{% endblock %}
+
+{% block lcontext %}
+    <div class="content">
+        <div class="header">
+            <div class="logo text-center"><a href="{% url 'home' %}"><img src="/static/img/logo-dark.png" alt="Klorofil Logo"></a></div>
+            <p class="lead">Login to your account</p>
+        </div>
+        <form class="form-auth-small" method="post">
+            {% csrf_token %}
+            {% if message %}
+                <div class="alert alert-warning">{{ message }}</div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="signin-email" class="control-label sr-only">Phone</label>
+                <input type="text" class="form-control" id="signin-email" name="username" value="{{ account }}" placeholder="Your Phone">
+            </div>
+            <div class="form-group">
+                <label for="signin-password" class="control-label sr-only">Password</label>
+                <input type="password" class="form-control" id="signin-password" name="password" placeholder="Password">
+            </div>
+            {% comment %} <div class="form-group clearfix">
+                    <label class="fancy-checkbox element-left">
+                        <input type="checkbox">
+                        <span>Remember me</span>
+                    </label>
+                </div>{% endcomment %}
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block">登录</button>
+        </form>
+        <br>
+        <div class="bottom">
+            <span class="helper-text"><i class="fa fa-book"></i> <a href="{% url 'register' %}">注册</a></span>
+        </div>
+    </div>
+    <script type="text/javascript">
+        img = document.getElementById('v_code');
+        img.onclick = function () {
+            img.src += '?'
+        }
+    </script>
+{% endblock %}
+{% block rcontext %}
+
+{% endblock %}

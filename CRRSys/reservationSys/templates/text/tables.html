@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}会议室{% endblock %}
+
+{% block context %}
+    <!-- MAIN -->
+    <div class="main">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="container-fluid">
+                <h3 class="page-title">会议室信息</h3>
+                <div class="row">
+                    {% for room, rate in dates %}
+                        <div class="col-md-4">
+                            <!-- TABLE STRIPED -->
+                            <div class="panel">
+
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">{{ room.address }}</h3>
+                                    <br>
+                                    <h3 class="panel-title"><strong>{{ room.info }}</strong></h3>
+                                </div>
+                                <div class="progress" style="width: 60%; margin-left:25px;">
+                                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ rate }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ rate }}%">
+                                        <span class="sr-only">{{ rate }}</span>
+                                    </div>
+                                </div>
+                                <div class="panel">
+                                    <a href="{% url 'detail' room.id %}">
+                                        <button type="button" class="btn btn-primary" style="float: right; margin: -17px 40px">
+                                            预订
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- END TABLE STRIPED -->
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+        <!-- END MAIN CONTENT -->
+    </div>
+    <!-- END MAIN -->
+
+{% endblock %}

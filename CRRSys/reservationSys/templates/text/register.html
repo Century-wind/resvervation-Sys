@@ -1,0 +1,205 @@
+{% extends 'lrbase.html' %}
+
+{% block title %}register{% endblock %}
+
+{% block css %}
+    <style>
+        video {
+            display: none;
+            position:absolute;
+            left:5%;
+            top: 15%;
+        }
+        #canvas {
+            display: block;
+            position:absolute;
+            left:62%;
+            top: 15%;
+        }
+        #openVideo{
+            display: block;
+            position: absolute;
+            left: 45%;
+            bottom: 15%;
+        }
+        #snap {
+            display: block;
+            position:absolute;
+            left:35%;
+            bottom: 5%;
+        }
+        #takeImg{
+            display: block;
+            position:absolute;
+            left:55%;
+            bottom: 5%;
+        }
+        #wb{
+            position: absolute;
+            top: 10%;
+            color: #8f1f00;
+            left: 68%;
+        }
+    </style>
+{% endblock %}
+
+
+{% block lcontext %}
+    <div class="content">
+
+        {% if message %}
+            <div class="alert alert-warning">{{ message }}</div>
+
+        {% else %}
+            <div class="header"  style="margin-bottom: 10px">
+                <div class="logo text-center"><a href="{% url 'home' %}"><img src="/static/img/logo-dark.png" alt="Klorofil Logo"></a></div>
+                <p class="lead">Register to your account</p>
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                <div class="form-group col-md-6">
+                    <label for="signin-text" class="control-label sr-only">Phone</label>
+                    <input type="text" class="form-control" id="signin-email" name="phone" value="{{ account }}" placeholder="电话:">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="signin-text" class="control-label sr-only">Username</label>
+                    <input type="text" class="form-control" id="signin-email" name="username" placeholder="姓名:">
+                </div>
+            </div>
+            <div>
+                <div class="form-group col-md-6">
+                    <label for="signin-text" class="control-label sr-only">Department</label>
+                    <input type="text" class="form-control" id="signin-email" name="department" placeholder="部门:">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="signin-text" class="control-label sr-only">Position</label>
+                    <input type="text" class="form-control" id="signin-email" name="position" placeholder="职位:">
+                </div>
+            </div>
+
+            <div class="form-group" style="padding-left: 12px; padding-right: 12px">
+                <label for="signin-password" class="control-label sr-only">Password</label>
+                <input type="password" class="form-control" id="signin-password" name="password" placeholder="密码:">
+            </div>
+            <input type="hidden" name="face" id="face" />
+            <div class="form-group" style="padding-left: 12px; padding-right: 12px">
+                <div class="form-group">
+                    <button type="button" id="openvideo" class="btn btn-primary" style="float: left">打开摄像头</button>
+                    <button type="button" id="takeimg" class="btn btn-primary">拍照</button>
+                </div>
+            </div>
+            <div class="form-group" style="padding-left: 12px; padding-right: 12px">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">注册</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block rcontext %}
+
+    <video id="video" width="57%" height="54.5%" autoplay></video>
+    <p id="wb">请正对摄像头！</p>
+    <canvas id="canvas" name="face"></canvas>
+
+    {#	Javascript #}
+    <script type="text/javascript">
+        var context = canvas.getContext("2d");
+        //当DOM树构建完成的时候就会执行DOMContentLoaded事件
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+        window.addEventListener("DOMContentLoaded", function() {
+            //获得Canvas对象
+            var canvas = document.getElementById("canvas"),
+                //获得video摄像头区域
+                video = document.getElementById("video"),
+                videoObj = {
+                    "video" : true
+                },
+                errBack = function(error) {
+                    console.log("Video capture error: ", error.code);
+                };
+            {#放大图片#}
+            context.scale(0.3,0.3);
+            context.strokeRect(5,5,640,480);
+
+            // 老的浏览器可能根本没有实现 mediaDevices，所以我们可以先设置一个空的对象
+            if (navigator.mediaDevices === undefined) {
+                navigator.mediaDevices = {};
+            }
+
+            // 一些浏览器部分支持 mediaDevices。我们不能直接给对象设置 getUserMedia
+            // 因为这样可能会覆盖已有的属性。这里我们只会在没有getUserMedia属性的时候添加它。
+            if (navigator.mediaDevices.getUserMedia === undefined) {
+                navigator.mediaDevices.getUserMedia = function(constraints) {
+
+                    // 首先，如果有getUserMedia的话，就获得它
+                    var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+                    // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
+                    if (!getUserMedia) {
+                        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                    }
+
+                    // 否则，为老的navigator.getUserMedia方法包裹一个Promise
+                    return new Promise(function(resolve, reject) {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    });
+                }
+            }
+
+            // 显示摄像头
+            document.getElementById("openvideo").addEventListener("click", function() {
+                // 调用摄像头
+                navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+                    .then(function(stream) {
+                        var video = document.querySelector('video');
+                        // 旧的浏览器可能没有srcObject
+                        if ("srcObject" in video) {
+                            video.srcObject = stream;
+                        } else {
+                            // 防止在新的浏览器里使用它，应为它已经不再支持了
+                            video.src = window.URL.createObjectURL(stream);
+                        }
+                        video.onloadedmetadata = function(e) {
+                            video.play();
+                        };
+                    })
+                    .catch(function(err) {
+                        console.log(err.name + ": " + err.message);
+                    });
+            }, false);
+            video.style.display="block";
+        });
+
+        // 触发拍照动作
+        document.getElementById("takeimg").addEventListener("click", function() {
+            context.drawImage(video, 0, 0, 640, 480);
+            var base64 = canvas.toDataURL("images/png")
+        });
+
+        // 将base64转为Blob传输
+        {% comment %}function dataURLtoBlob(image) {
+            var arr = image.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            console.log(u8arr)
+            return new Blob([u8arr], { type: mime });{% endcomment %}
+        // 保存图片
+        document.getElementById("takeimg").addEventListener('click', function() {
+            var image = new Image(),
+                canvas = document.getElementById("canvas");
+            image.src = canvas.toDataURL("image");
+
+            $('#face').val(image.src);
+            console.log(image)
+            {#dataURLtoBlob(image.src)#}
+        });
+    </script>
+
+{% endblock %}

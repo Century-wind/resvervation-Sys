@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}book{% endblock %}
+
+{% block context %}
+    <!-- MAIN -->
+    <div class="main">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="container-fluid">
+                <h3 class="page-title">预订</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- INPUTS -->
+                        <div class="panel">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">{{ room.address }}{{ message }}</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <p>会议室主题：</p>
+                                    <input type="text" class="form-control" name="theme" placeholder="Your theme">
+                                    <br>
+                                    <p>备注信息：</p>
+                                    <textarea class="form-control" name="note" placeholder="Note: 09:00-17:00....." rows="4"></textarea>
+                                    <br>
+                                    <div>
+                                        <span style="float: left; padding: 6px 12px;">开始时间：</span>
+                                        <p style="padding: 6px 12px;">{{ time }}</p>
+                                    </div>
+                                    <div>
+                                        <span style="float: left; padding: 6px 12px;">结束时间：</span>
+                                        <input type="time" class="form-control" name="end_time" style="width: 50%">
+                                    </div>
+                                    <input type="submit" class="btn btn-success" style="float: right">
+                                </div>
+                            </form>
+                        </div>
+                        <!-- END INPUTS -->
+                    </div>
+                    <div class="col-md-6">
+                        <!-- INPUTS -->
+                        <img src= "/static/img/book.jpg" style="width: 100%; height: 100%">
+                        <!-- END INPUTS -->
+                    </div>
+                </div>
+            </div>
+            <!-- END MAIN -->
+            <div class="clearfix"></div>
+            <footer>
+                <div class="container-fluid">
+                    <p class="copyright">Copyright &copy; 2017.Company name All rights reserved.More Templates <a href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a></p>
+                </div>
+            </footer>
+        </div>
+        <!-- END WRAPPER -->
+
+{% endblock %}

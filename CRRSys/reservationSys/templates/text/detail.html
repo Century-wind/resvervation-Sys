@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}home{% endblock %}
+
+{% block context %}
+
+    <style type="text/css">
+        .a-customize {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            color: #fff;
+            background-color: white;
+            border: 1px solid #46b8da;
+            text-align: center;
+            line-height: 35px;
+
+        }
+        .a-customize:hover {
+            display: inline-block;
+            color: #fff;
+            background-color: #fd9f3e;
+        }
+    </style>
+
+    <!-- MAIN -->
+    <div class="main">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="container-fluid">
+                <h3 class="page-title">Meeting Room</h3>
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- TABLE hover -->
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">{{ room_detail.info }}: {{ room_detail.address }}</h3>
+                            </div>
+                            <div class="alert alert-success alert-dismissible" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <i class="fa fa-info-circle"></i> 该会议室已有预定时间点：
+                                {% for foo in book_times %}
+                                    {{ foo }}；
+                                {% endfor %}
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>time</th>
+                                        {% for week, day in weeks.items %}
+                                            <th style="padding: 8px">{{ week }}. {{ day }} </th>
+                                        {% endfor %}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for fo in time %}
+                                        <tr>
+                                            <th>{{ fo.0}}</th>
+                                            <th><a class="a-customize" href="javascript:reservation('{{ fo.1 }}','{{ fo.0 }}')" >预订</a></th>
+                                            <th><a class="a-customize" href="javascript:reservation('{{ fo.2 }}','{{ fo.0 }}')" >预订</a></th>
+                                            <th><a class="a-customize" href="javascript:reservation('{{ fo.3 }}','{{ fo.0 }}')" >预订</a></th>
+                                            <th><a class="a-customize" href="javascript:reservation('{{ fo.4 }}','{{ fo.0 }}')" >预订</a></th>
+                                            <th><a class="a-customize" href="javascript:reservation('{{ fo.5 }}','{{ fo.0 }}')" >预订</a></th>
+                                            <th><a class="a-customize" href="javascript:reservation('{{ fo.6 }}','{{ fo.0 }}')" >预订</a></th>
+                                            <th style="padding: 8px"><a class="a-customize" href="javascript:reservation('{{ fo.6 }}','{{ fo.0 }}')">预订</a></th>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                        <!-- END TABLE STRIPED -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MAIN CONTENT -->
+    </div>
+    <!-- END MAIN -->
+
+
+    <script type="text/javascript">
+        function reservation(date, time, id) {
+            date = date.replace("'", "");
+            time = time.replace("'", "");
+
+            var times_list = {{ js_book_times|safe }};
+            var dates_list = {{ js_book_dates|safe }};
+{#            indexOf() 数据存在则 > -1,，不存在则 = -1#}
+            if (( dates_list.indexOf(date) > -1) && ( times_list.indexOf(time)) > -1 ){
+                alert("该时间点已被预订");
+            }else {
+                window.location.href = "/detail/" + {{ room_detail.id }} +"/" + date + "/" + time + "/";
+            }
+        }
+
+    </script>
+{% endblock %}
